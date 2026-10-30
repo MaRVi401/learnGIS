@@ -1,58 +1,137 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🗺️ Web GIS Pengenalan GADM & Manajemen Depot (Laravel + Leaflet.js)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi Web GIS sederhana berbasis **Laravel** dan **Leaflet.js** untuk memvisualisasikan data batas wilayah administratif Indonesia dari **GADM (Global Administrative Areas) Level 0 hingga Level 3**, serta fitur **CRUD Spasial (Create, Read, Update, Delete) Depot** secara interaktif dengan kustomisasi *marker icon*.
 
-## About Laravel
+Proyek ini dirancang khusus untuk **Modul Praktikum GIS Dasar** tanpa memerlukan koneksi atau instalasi database spasial (PostgreSQL/MySQL), sehingga sangat ringan dan cepat diimplementasikan.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🌟 Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. **Visualisasi Batas Wilayah Dinamis (GADM Level 0 – 3):**
+   - **Level 0:** Batas Negara (Indonesia)
+   - **Level 1:** Batas Provinsi
+   - **Level 2:** Batas Kabupaten / Kota
+   - **Level 3:** Batas Kecamatan
+2. **Auto-Fit Bounds:** Peta secara otomatis menyesuaikan tingkat *zoom* dan pusat tampilan setiap kali layer GeoJSON dimuat.
+3. **Manajemen Depot Interaktif (CRUD Spasial):**
+   - **Create:** Menambahkan titik depot baru dengan mengeklik area di peta untuk menangkap koordinat Latitude & Longitude secara presisi.
+   - **Read:** Menampilkan daftar depot tersimpan dan penanda (*marker*) khusus di atas peta.
+   - **Update:** Mengedit nama dan menggeser lokasi depot ke koordinat baru.
+   - **Delete:** Menghapus depot dari peta dan daftar.
+4. **Zero Database Architecture:** Berjalan sepenuhnya tanpa ketergantungan driver database (Session & Cache menggunakan *File Driver*).
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 📁 Struktur Direktori Penting
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```text
+gis-gadm/
+├── app/
+│   └── Http/
+│       └── Controllers/
+│           └── GisController.php      # Controller penyedia View & API GeoJSON
+├── routes/
+│   └── web.php                        # Routing aplikasi & API dinamis
+├── resources/
+│   └── views/
+│       └── map.blade.php              # Antarmuka Peta (Leaflet.js + Form CRUD Depot)
+└── storage/
+    └── app/
+        └── public/
+            └── json/
+                └── gadm/              # Direktori penyimpan file GeoJSON GADM
+                    ├── gadm41_IDN_0.json
+                    ├── gadm41_IDN_1.json
+                    ├── gadm41_IDN_2.json
+                    └── gadm41_IDN_3.json
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 🚀 Langkah Instalasi & Konfigurasi
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Clone / Siapkan Proyek Laravel
 
-## Code of Conduct
+Buat proyek Laravel baru atau ekstrak repositori ini:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+composer create-project laravel/laravel gis-gadm
+cd gis-gadm
 
-## Security Vulnerabilities
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2. Konfigurasi Bebas Database (`.env`)
 
-## License
+Buka file `.env` di root proyek, lalu ubah variabel berikut untuk menonaktifkan kebutuhan database SQLite/MySQL:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```env
+DB_CONNECTION=null
+SESSION_DRIVER=file
+CACHE_STORE=file
+
+```
+
+### 3. Siapkan File GeoJSON GADM
+
+Buat direktori penyimpan file di storage Laravel:
+
+```bash
+mkdir -p storage/app/public/json/gadm
+
+```
+
+Letakkan file GeoJSON GADM Indonesia v4.1 ke dalam direktori `storage/app/public/json/gadm/` dengan penamaan:
+
+* `gadm41_IDN_0.json`
+* `gadm41_IDN_1.json`
+* `gadm41_IDN_2.json`
+* `gadm41_IDN_3.json`
+
+---
+
+## 💻 Penggunaan Aplikasi
+
+1. Jalankan server lokal Laravel:
+```bash
+php artisan serve
+
+```
+
+
+2. Buka browser dan akses alamat:
+```text
+[http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+```
+
+
+3. **Pilih Batas Wilayah:** Gunakan *dropdown* di bagian atas untuk mengganti hirarki batas administratif GADM (Level 0 - 3).
+4. **Tambah Depot Baru:**
+* Klik di sembarang titik lokasi pada peta.
+* Koordinat Latitude & Longitude akan terisi otomatis pada form di sebelah kanan.
+* Masukkan **Nama Depot**, lalu klik **Simpan Depot**.
+
+
+5. **Edit / Hapus Depot:**
+* Klik tombol **Edit** pada daftar depot di panel kanan untuk memindahkan koordinat atau merubah nama depot.
+* Klik tombol **Hapus** untuk menghapus depot dari peta.
+
+
+
+---
+
+## 🛠️ Stack Teknologi
+
+* **Backend:** PHP 8.x / Laravel 11+
+* **Frontend:** HTML5, CSS3, JavaScript (ES6)
+* **GIS Engine:** Leaflet.js v1.9.4
+* **Basemap:** OpenStreetMap
+* **Data Standard:** GeoJSON (GADM v4.1)
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dibuat untuk keperluan modul praktikum akademis dan bersifat open-source.
